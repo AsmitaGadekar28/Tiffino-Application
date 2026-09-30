@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <title>Tiffino 🍽️ AI Assistant</title>
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+          font-family:'Poppins',sans-serif;
+          background:radial-gradient(circle at 10% 20%,#1e2747,#0f1724 80%);
+          color:#e6eef8;
+          height:100vh;
+          display:flex;
+          justify-content:center;
+          align-items:center;
+        }
+
+        /* MAIN CONTAINER */
+        .container{
+          width:90%;
+          max-width:1000px;
+          height:90vh;
+          background:rgba(255,255,255,0.05);
+          backdrop-filter:blur(10px);
+          border-radius:16px;
+          display:flex;
+          flex-direction:column;
+          overflow:hidden;
+          box-shadow:0 0 30px rgba(0,0,0,0.3);
+        }
+
+        /* HEADER */
+        header{
+          padding:16px;
+          background:linear-gradient(90deg,#7b61ff,#00d4ff);
+          color:#fff;
+          font-weight:600;
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+        }
+
+        #status{
+          padding:5px 10px;
+          border-radius:8px;
+          background:rgba(255,255,255,0.35);
+          font-size:14px;
+        }
+
+        /* MESSAGES */
+        #messages{
+          flex:1;
+          padding:20px;
+          overflow-y:auto;
+          display:flex;
+          flex-direction:column;
+          gap:14px;
+        }
+
+        .bubble{
+          max-width:75%;
+          padding:14px 18px;
+          border-radius:14px;
+          line-height:1.45;
+          animation:fadeIn .3s ease-out;
+        }
+
+        .user{
+          align-self:flex-end;
+          background:#2a314d;
+        }
+
+        .bot{
+          align-self:flex-start;
+          background:#02314d;
+        }
+
+        /* INPUT AREA */
+        #inputArea{
+          padding:12px;
+          display:flex;
+          background:rgba(255,255,255,0.06);
+        }
+
+        textarea{
+          flex:1;
+          padding:14px;
+          border:none;
+          border-radius:10px;
+          font-size:15px;
+          background:rgba(255,255,255,0.08);
+          color:#fff;
+          resize:none;
+          outline:none;
+        }
+
+        button{
+          margin-left:12px;
+          background:linear-gradient(90deg,#7b61ff,#00d4ff);
+          border:none;
+          padding:0 18px;
+          font-size:15px;
+          border-radius:10px;
+          cursor:pointer;
+          font-weight:700;
+          color:#02121a;
+        }
+
+        button:hover{transform:translateY(-2px)}
+        button:disabled{opacity:.6;cursor:not-allowed}
+
+        /* Typing Animation */
+        .dot{
+          width:8px;height:8px;border-radius:50%;background:#bfefff;
+          animation:blink 1s infinite;
+        }
+        .dot:nth-child(2){animation-delay:.2s}
+        .dot:nth-child(3){animation-delay:.4s}
+
+        @keyframes blink{
+          0%{opacity:.2}
+          50%{opacity:1}
+          100%{opacity:.2}
+        }
+
+        @keyframes fadeIn{
+          from{opacity:0;transform:translateY(6px)}
+          to{opacity:1;transform:translateY(0)}
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <header>
+        <div>Tiffino 🍽️ AI Assistant</div>
+        <div id="status">🟡 Checking...</div>
+    </header>
+
+    <div id="messages"></div>
+
+    <div id="inputArea">
+        <textarea id="prompt" placeholder="Ask about meals, subscriptions, diet plans..."></textarea>
+        <button id="sendBtn">Send ➤</button>
+    </div>
+</div>
+
+<script>
+    console.log("AI Chat Loaded!");
+
+    const endpoint = "http://localhost:8080/api/ai/ask";
+
+    const messagesEl = document.getElementById("messages");
+    const promptEl = document.getElementById("prompt");
+    const sendBtn = document.getElementById("sendBtn");
+    const statusEl = document.getElementById("status");
+
+    let busy = false;
+
+    // Load chat from localStorage
+    let chat = JSON.parse(localStorage.getItem("tiffino_chat") || "[]");
+
+    function saveChat(){
+      localStorage.setItem("tiffino_chat", JSON.stringify(chat));
+    }
+
+    function escapeHtml(str){
+      return str.replace(/[&<>"']/g, m => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[m]));
+    }
+
+    function nl2br(text){
+      return text.replace(/\n/g, "<br>");
+    }
+
+    function render(){
+      messagesEl.innerHTML = "";
+      chat.forEach(m => {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble " + m.role;
+        bubble.innerHTML = nl2br(escapeHtml(m.text));
+        messagesEl.appendChild(bubble);
+      });
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // Add message
+    function addMessage(role, text){
+      chat.push({role, text});
+      saveChat();
+      render();
+    }
+
+    // Typing animation
+    function showTyping(){
+      const div = document.createElement("div");
+      div.className = "bubble bot";
+      div.innerHTML = `<div style="display:flex;gap:6px;">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+      </div>`;
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return div;
+    }
+
+    // Send message
+    async function sendMessage(){
+      let text = promptEl.value.trim();
+      if(!text || busy) return;
+
+      addMessage("user", text);
+      promptEl.value = "";
+      busy = true;
+      sendBtn.disabled = true;
+
+      let typingDiv = showTyping();
+
+      try{
+        const res = await fetch(endpoint, {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({prompt:text})
+        });
+
+        let reply = await res.text();
+        typingDiv.remove();
+        addMessage("bot", reply || "⚠️ No response.");
+      }
+      catch(err){
+        typingDiv.remove();
+        addMessage("bot", "⚠️ Error: " + err.message);
+      }
+
+      busy = false;
+      sendBtn.disabled = false;
+    }
+
+    // Button click
+    sendBtn.onclick = sendMessage;
+
+    // Press ENTER to send
+    promptEl.addEventListener("keydown", e=>{
+      if(e.key==="Enter" && !e.shiftKey){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Server status check
+    async function checkServer(){
+      try{
+        let res = await fetch(endpoint,{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({prompt:"ping"})
+        });
+
+        if(res.ok){
+          statusEl.textContent = "🟢 Connected";
+          statusEl.style.background = "rgba(0,255,0,0.25)";
+        } else {
+          statusEl.textContent = "🔴 Error";
+          statusEl.style.background = "rgba(255,0,0,0.25)";
+        }
+      }catch{
+        statusEl.textContent = "🔴 Offline";
+        statusEl.style.background = "rgba(255,0,0,0.25)";
+      }
+    }
+
+    checkServer();
+    render();
+</script>
+</body>
+</html>

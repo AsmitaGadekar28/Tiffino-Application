@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FoodCare Manager Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <style>
+        /* 🌫️ Modern Aesthetic Grey-Lavender Theme */
+        body {
+          font-family: "Inter", "Poppins", "Segoe UI", sans-serif;
+          margin: 0;
+          background: linear-gradient(135deg, #f5f6f7, #ebecf0, #e8e9ef);
+          color: #2c2c2c;
+          letter-spacing: 0.2px;
+        }
+
+        header {
+          background: linear-gradient(135deg, #646e78, #8c8fa3, #b5b5c8);
+          color: #fff;
+          padding: 26px;
+          text-align: center;
+          font-size: 26px;
+          font-weight: 600;
+          letter-spacing: 0.5px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+          border-radius: 0 0 12px 12px;
+        }
+
+        table {
+          width: 95%;
+          margin: 40px auto;
+          border-collapse: collapse;
+          background: #ffffffcc;
+          backdrop-filter: blur(10px);
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+          animation: fadeUp 0.6s ease;
+        }
+
+        th,
+        td {
+          padding: 16px 18px;
+          text-align: left;
+          border-bottom: 1px solid #ececec;
+          font-size: 15px;
+        }
+
+        th {
+          background: linear-gradient(135deg, #d8d7e0, #cfcde0);
+          color: #2f2f2f;
+          text-transform: uppercase;
+          font-weight: 600;
+          letter-spacing: 0.4px;
+        }
+
+        tr:hover {
+          background: rgba(240, 239, 255, 0.5);
+          transition: background 0.3s ease;
+        }
+
+        img {
+          width: 70px;
+          height: 70px;
+          object-fit: cover;
+          border-radius: 12px;
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+          transition: transform 0.2s ease;
+        }
+
+        img:hover {
+          transform: scale(1.05);
+        }
+
+        .tag {
+          padding: 7px 14px;
+          border-radius: 20px;
+          font-size: 13px;
+          font-weight: 500;
+          text-transform: capitalize;
+          letter-spacing: 0.4px;
+          display: inline-block;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .pending {
+          background: linear-gradient(135deg, #d4a373, #e4b07f);
+          color: #fff;
+          box-shadow: 0 2px 6px rgba(212, 163, 115, 0.5);
+        }
+
+        .resolved {
+          background: linear-gradient(135deg, #81b29a, #9bc2a3);
+          color: #fff;
+          box-shadow: 0 2px 6px rgba(129, 178, 154, 0.4);
+        }
+
+        /* Subtle fade-up animation */
+        @keyframes fadeUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        tbody tr {
+          animation: fadeUp 0.4s ease forwards;
+        }
+
+        /* Soft scroll effect */
+        ::-webkit-scrollbar {
+          width: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+          background: #c4c4c4;
+          border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+          th,
+          td {
+            padding: 10px;
+            font-size: 13px;
+          }
+          header {
+            font-size: 20px;
+            padding: 18px;
+          }
+          table {
+            width: 98%;
+          }
+        }
+    </style>
+</head>
+
+<body>
+<header>🍽 FoodCare — Live Issue Dashboard</header>
+
+<table>
+    <thead>
+    <tr>
+        <th>User Email</th>
+        <th>Issue Type</th>
+        <th>Message</th>
+        <th>Image</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody id="issueBody"></tbody>
+</table>
+
+<script>
+    const token = localStorage.getItem("jwt");
+    const API = `${window.location.origin}/api/chatbot/manager/issues`;
+
+    async function loadIssues() {
+      const res = await fetch(API, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      const data = await res.json();
+      data.forEach(addRow);
+    }
+
+    function addRow(issue) {
+      const tbody = document.getElementById("issueBody");
+      const row = document.createElement("tr");
+
+      row.innerHTML = `
+        <td>${issue.userEmail}</td>
+        <td><b>${issue.issueType}</b></td>
+        <td>${issue.message || "-"}</td>
+        <td>${issue.photoUrl ? `<img src="${issue.photoUrl}" />` : "No Image"}</td>
+        <td><span class="tag ${
+          issue.status === "PENDING" ? "pending" : "resolved"
+        }">${issue.status}</span></td>
+      `;
+
+      tbody.prepend(row);
+    }
+
+    const socket = new SockJS("http://localhost:8080/ws");
+    const stompClient = Stomp.over(socket);
+
+    stompClient.connect({ Authorization: "Bearer " + token }, () => {
+      console.log("✅ Manager WebSocket Connected");
+      stompClient.subscribe("/topic/manager/issues", (msg) => {
+        const issue = JSON.parse(msg.body);
+        console.log("📩 New Issue Received", issue);
+        addRow(issue);
+        alert("📢 New Customer Issue Received!");
+      });
+    });
+
+    loadIssues();
+</script>
+</body>
+</html>
