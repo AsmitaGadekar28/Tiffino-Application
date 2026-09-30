@@ -540,12 +540,10 @@ Third-Party API Keys
 Private Tokens
 
 Use environment variables wherever possible.
+----------------
 
-Example:
-
-spring.datasource.password=${DB_PASSWORD}
-ai.api.key=${AI_API_KEY}
 ▶️ How to Run the Project
+
 Step 1 – Clone Repository
 git clone https://github.com/AsmitaGadekar28/Tiffino-Application.git
 Step 2 – Open in IntelliJ IDEA
@@ -581,11 +579,14 @@ TiffinoMainApplication.java
 Or use:
 
 mvn spring-boot:run
+--------------------------
 🌐 Application URL
 
 After starting the Spring Boot application:
 
 http://localhost:8080
+
+-----------------------------
 🧪 Testing
 
 Run the test suite:
@@ -595,6 +596,8 @@ mvn test
 Test files are located under:
 
 src/test/
+
+-------------------------------
 📸 Screenshots
 
 Add screenshots of the application here.
@@ -620,6 +623,8 @@ Example:
 ## Admin Dashboard
 
 ![Admin Dashboard](screenshots/admin.png)
+----------------------
+
 🔒 Security Best Practices
 
 Never commit sensitive information such as:
