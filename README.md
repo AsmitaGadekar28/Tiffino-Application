@@ -80,12 +80,12 @@ The application uses Spring Security for authentication and authorization.
 - Access control
 
 ### User Roles
-
 ```text
 USER
 ADMIN
 SUPER_ADMIN
-🍱
+-------------
+
 ## 🚀 Features
 
 ### 👤 User Features
