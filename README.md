@@ -188,6 +188,7 @@ DELIVERED
 CANCELLED
 
 ----------------------------
+
 📅 Subscription Management
 
 Tiffino supports subscription-based meal services.
@@ -204,6 +205,7 @@ Subscription Types
 DAILY
 WEEKLY
 MONTHLY
+
 -----------------------
 🎁 Gift Card Module
 
@@ -272,13 +274,18 @@ Git
 GitHub
 Postman
 MySQL Workbench
+
 --------------------------
 🗄️ Database
 
 Tiffino uses MySQL as the primary relational database.
 Spring Data JPA and Hibernate are used for database interaction and ORM.
+
+--------------
+
 Database Name
 tiffino
+
 ------------------------------
 📊 Database Architecture
 
@@ -306,6 +313,7 @@ Orders
   │
   ├── Users
   └── Meals
+  
 --------------------
 📋 Main Database Modules
 👤 Users
@@ -417,6 +425,7 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 
 Replace YOUR_PASSWORD with your local MySQL password.
+
 --------------
 🗂️ Project Structure
 tiffino_main/
@@ -481,6 +490,8 @@ Database Layer
 
 MySQL stores application data.
 
+---------------
+
 🔌 REST API Modules
 
 The application provides REST APIs for different modules.
@@ -541,6 +552,7 @@ Third-Party API Keys
 Private Tokens
 
 Use environment variables wherever possible.
+
 ----------------
 
 ▶️ How to Run the Project
@@ -624,6 +636,7 @@ Example:
 ## Admin Dashboard
 
 ![Admin Dashboard](screenshots/admin.png)
+
 ----------------------
 
 🔒 Security Best Practices
@@ -684,4 +697,4 @@ This project is developed for educational and application development purposes.
 
 ⭐ Support
 
-If you find this project useful, consider giving the repository a ⭐ on GitHub.
+     If you find this project useful, consider giving the repository a ⭐ on GitHub.
