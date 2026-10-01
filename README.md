@@ -293,7 +293,6 @@ tiffino
 The database stores information related to:
 
 ```text
-
 Users
   │
   ├── Orders
@@ -319,8 +318,8 @@ Orders
   
 --------------------
 📋 Main Database Modules
-👤 Users
 
+👤 Users
 Stores user information.
 
 Typical information:
@@ -432,6 +431,7 @@ Replace YOUR_PASSWORD with your local MySQL password.
 --------------
 🗂️ Project Structure
 
+```text
 tiffino_main/
 │
 ├── src/
@@ -658,6 +658,7 @@ Private Tokens
 Use environment variables or local configuration files.
 
 🚀 Future Enhancements
+
 Online payment gateway
 Razorpay / Stripe integration
 Live food delivery tracking
