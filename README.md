@@ -250,6 +250,7 @@ User communication
 
 ------------------------------
 🛠️ Technology Stack
+
 Backend
 Java
 Spring Boot
@@ -290,6 +291,8 @@ tiffino
 📊 Database Architecture
 
 The database stores information related to:
+
+```text
 
 Users
   │
@@ -428,6 +431,7 @@ Replace YOUR_PASSWORD with your local MySQL password.
 
 --------------
 🗂️ Project Structure
+
 tiffino_main/
 │
 ├── src/
@@ -460,6 +464,8 @@ tiffino_main/
 🏛️ Application Architecture
 
 Tiffino follows a layered architecture.
+
+```text
 
                   CLIENT
                     │
