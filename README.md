@@ -431,27 +431,25 @@ Replace YOUR_PASSWORD with your local MySQL password.
 --------------
 🗂️ Project Structure
 
-<div>
-tiffino_main/<br>
-│<br>
-├── src/<br>
-│&nbsp;&nbsp;&nbsp;├── main/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── java/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── com/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── tiffino/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── tiffino/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── config/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── controller/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── service/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── util/<br>
-│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── TiffinoMainApplication.java<br>
-│&nbsp;&nbsp;&nbsp;└── resources/<br>
-│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── static/<br>
-│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── application.properties<br>
-├── test/<br>
-├── pom.xml<br>
+tiffino_main/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │       └── tiffino/
+│   │          └── tiffino/
+│   │             ├── config/
+│   │             ├── controller/
+│   │             ├── service/
+│   │             ├── util/
+│   │             └── TiffinoMainApplication.java
+│   └── resources/
+│      ├── static/
+│      └── application.properties
+├── test/
+├── pom.xml
 └── README.md
-</div>
 
 ----------
 🏛️ Application Architecture
@@ -473,6 +471,8 @@ Tiffino follows a layered architecture.
                     │
                     ▼
                  DATABASE
+
+
 Controller Layer
 
 Handles HTTP requests and REST APIs.
