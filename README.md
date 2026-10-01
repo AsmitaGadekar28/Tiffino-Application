@@ -78,12 +78,13 @@ The application uses Spring Security for authentication and authorization.
 - Token-based authentication
 - OTP verification
 - Access control
+-----------
 
 ### User Roles
-```text
 USER
 ADMIN
 SUPER_ADMIN
+
 -------------
 
 ## 🚀 Features
